@@ -33,6 +33,11 @@
             <div v-if="page=='輸入頁面'">
 
                 <div class="btn-group mb-2" role="group" aria-label="Basic radio toggle button group">
+                    
+                    <input type="radio" class="btn-check" name="ioradio" id="ioradio-s"
+                    value="到貨" v-model="input.io">
+                    <label class="btn btn-outline-primary" for="ioradio-s">到貨</label>
+                    
                     <input type="radio" class="btn-check" name="ioradio" id="ioradio-i" checked 
                     value="調入" v-model="input.io">
                     <label class="btn btn-outline-primary" for="ioradio-i">調入</label>
@@ -40,32 +45,48 @@
                     <input type="radio" class="btn-check" name="ioradio" id="ioradio-o"  
                     value="調出" v-model="input.io">
                     <label class="btn btn-outline-primary" for="ioradio-o">調出</label>
+                    
+                    <input type="radio" class="btn-check" name="ioradio" id="ioradio-l"  
+                    value="剩餘" v-model="input.io">
+                    <label class="btn btn-outline-primary" for="ioradio-l">剩餘</label>
+
+
                 </div>
                 <br>
                 <div>
                     <h3>品項</h3>
-                    <div v-for="(item,index) in product">
+                    <div v-for="(item,index) in product" class="mb-2">
                         <input type="checkbox" name="select_menu" :value="index"
                         :id="'selec_menu_'+index" @click.once="add_selected(index,item)" v-model="select_menu">{{index}}
                             <input type="number" :name="'num'+index" :id="'num'+index" v-model="selected_data[index].quanity"
                             v-if="select_menu.includes(index) && selected_data[index].quanity " > 
-                            {{selected_data[index].quanity}}
+                            <!-- {{selected_data[index].quanity}} -->
                     </div>
                 </div>
                 <br>
                 <button @click="save">記錄</button>
             </div>
             <div v-if="page=='統計頁面'">
+                <div>本日紀綠 {{renew}}</div>
                 <div v-for="(data,index) in saveData" mb-4>
                     <h3>{{data.type}}</h3>
                     {{data.time}}
                     <div v-for="(item,key) in data">
                         <ul>
-                            <li v-if="key != 'time' && key !='type'"> {{key}} : ${{item.price}} *{{item.quanity}}  小計{{item.price*item.quanity}}</li>
+                            <li v-if="!['time','type','subtotal'].includes(key)">
+                                <span>
+                                    {{key}} : ${{item.price}} *{{item.quanity}}  = {{item.price*item.quanity}}</li>
+                                </span>
                         </ul>
+                    </div>
+                    <div>
+                        <span>小計: </span><span v-if="['調出','剩餘'].includes(data.type)">{{data.type}}-</span>{{data.subtotal}}  </span>
+                        <button @click="delSave(index)">刪除</button>
                     </div>
                     <br>
                 </div>
+                <button @click="cat_total()">計算總額</button>
+                總計:{{total}}
             </div>
         </div>
     </div>
@@ -81,6 +102,7 @@ const App=Vue.createApp({
             page:"輸入頁面",
             select_menu:[],
             ttt:{},
+            renew:"",
             product:{
                 雞肉:  {name:"雞肉",price:90 },
                 雞腿:  {name:"雞腿",price:100 },
@@ -105,6 +127,7 @@ const App=Vue.createApp({
             this.selected_data[key].quanity=1;
         },
         getSaveData(){
+            // let saveData=[];
             let saveData=[];
             if(localStorage.convenientSchedule){
                 saveData=JSON.parse(localStorage.convenientSchedule);
@@ -133,23 +156,55 @@ const App=Vue.createApp({
         },
         save(){
             let newData={};
+            let subtotal=0;
             newData.type=this.input.io;
             this.select_menu.forEach(pd=>{
                 newData[pd]=this.selected_data[pd];
+                subtotal+= newData[pd].price * newData[pd].quanity;
             });
-            
+            newData.subtotal=subtotal;
             let nowTime=new Date();
             
             newData.time=nowTime;
-            let saveData=this.getSaveData();
-            saveData.push(newData);
-            saveData=this.chkSaveData(saveData,nowTime);
-            localStorage.convenientSchedule=JSON.stringify(saveData);
+            // App.$set(this,'saveData',this.getSaveData());
+            this.saveData=this.getSaveData();
+            this.saveData.push(newData);
+            this.saveData=this.chkSaveData(this.saveData,nowTime);
+            localStorage.convenientSchedule=JSON.stringify(this.saveData);
         },
         ttonclick(){
             let nowTime=new Date();
             this.saveData=this.getSaveData();
+            console.log(this.saveData);
             this.saveData=this.chkSaveData(this.saveData,nowTime)
+            localStorage.convenientSchedule=JSON.stringify(this.saveData);
+        },
+        delSave(i){
+            //刪除單筆資料
+            this.renew="更新中";
+            this.saveData.splice(i,1);
+            this.saveData=this.saveData.splice(0,100);
+            this.total="";
+            this.renew="";
+            localStorage.convenientSchedule=JSON.stringify(this.saveData);
+        },
+        cat_total(){
+            this.total=0;
+            this.saveData.forEach(i=>{
+                switch (i.type){
+                    case "調入"||"到貨":
+                        this.total+=i.subtotal;
+                        break;
+                    case "調出"||"剩餘":
+                        this.total-=i.subtotal;
+                        break;
+                    default :
+                    break;
+                }
+            });
+            this.renew="更新中";
+            console.log(this.total);
+            this.renew="";
         },
     },
     beforeMount(){
