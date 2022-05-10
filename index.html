@@ -170,6 +170,7 @@ const App=Vue.createApp({
             this.saveData=this.getSaveData();
             this.saveData.push(newData);
             this.saveData=this.chkSaveData(this.saveData,nowTime);
+            this.select_menu=[];
             localStorage.convenientSchedule=JSON.stringify(this.saveData);
         },
         ttonclick(){
