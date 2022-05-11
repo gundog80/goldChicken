@@ -86,7 +86,10 @@
                     <br>
                 </div>
                 <button @click="cat_total()">計算總額</button>
-                總計:{{total}}
+                總計:{{total}} <br>
+                <div v-for="(i,k) in price">
+                    {{k}}:{{i}} <br>
+                </div>
             </div>
         </div>
     </div>
@@ -112,9 +115,9 @@ const App=Vue.createApp({
                 豬腳:{name:"豬腳",price:110},
                 雙拼:{name:"雙拼",price:110},
                 打拋豬:{name:"打拋豬",price:110},
-                烤肉:{name:"烤肉",price:90},
+                烤肉:{name:"烤肉",price:100},
                 舒肥雞:{name:"舒肥雞",price:100},
-                赤燒肉:{name:"赤燒肉",price:90},
+                赤燒肉:{name:"赤燒肉",price:100},
             },
             // selected_data:{},
             input:{
@@ -179,6 +182,7 @@ const App=Vue.createApp({
             console.log(this.saveData);
             this.saveData=this.chkSaveData(this.saveData,nowTime)
             localStorage.convenientSchedule=JSON.stringify(this.saveData);
+            this.price={};
         },
         delSave(i){
             //刪除單筆資料
@@ -191,14 +195,41 @@ const App=Vue.createApp({
         },
         cat_total(){
             this.total=0;
+            
             this.saveData.forEach(i=>{
+                console.log(i);
                 switch (i.type){
-                    case "調入"||"到貨":
+                    // case "調入"||"到貨":
+                    case "調入":
+                    case "到貨":
                         this.total+=i.subtotal;
+                        Object.entries(i).forEach(j=>{
+                            if(['time','type','subtotal'].includes(j[0])){}
+                            else{
+                                let k='$'+j[1].price;
+                                if(typeof this.price[k] === 'undefined'){
+                                    this.price[k]=j[1].quanity;
+                                }else{
+                                    this.price[k]+=j[1].quanity;
+                                }
+                            }
+                        });
                         break;
-                    case "調出"||"剩餘":
+                    case "調出":
+                    case "剩餘":
                         this.total-=i.subtotal;
-                        break;
+                        Object.entries(i).forEach(j=>{
+                            if(['time','type','subtotal'].includes(j[0])){}
+                            else{
+                                let k='$'+j[1].price;
+                                if(typeof this.price[k] === 'undefined'){
+                                    this.price[k]=-j[1].quanity;
+                                }else{
+                                    this.price[k]-=j[1].quanity;
+                                }
+                            }
+                        });
+                    break;
                     default :
                     break;
                 }
