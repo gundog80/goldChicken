@@ -18,6 +18,14 @@
 
 
         <div class="btn-group mb-2" role="group" aria-label="Basic radio toggle button group">
+            
+            <!-- template-失敗 v-model出問題
+            <template v-for="(i,k) in page_list">
+                <input type="radio" class="btn-check" name="pageradio" :id="'pageradio'+(i)" checked="" 
+                 :v-model="page" :value="i">
+                <label class="btn btn-outline-primary" :for="'pageradio'+(i)">{{i}}</label>
+            </template> -->
+
             <input type="radio" class="btn-check" name="pageradio" id="pageradio1" checked 
             value="輸入頁面" v-model="page">
             <label class="btn btn-outline-primary" for="pageradio1">輸入頁面</label>
@@ -25,29 +33,20 @@
             <input type="radio" class="btn-check" name="pageradio" id="pageradio2"  
             value="統計頁面" v-model="page" @click="ttonclick">
             <label class="btn btn-outline-primary" for="pageradio2">統計頁面</label>
+            
+            <input type="radio" class="btn-check" name="pageradio" id="pageradio3"  
+            value="固定資料" v-model="page" @click="load_person">
+            <label class="btn btn-outline-primary" for="pageradio3">固定資料</label>
         </div>
         <div class="border border-primary">
             <div v-if="page=='輸入頁面'">
 
                 <div class="btn-group mb-2" role="group" aria-label="Basic radio toggle button group">
-                    <!-- <inputtype v-for="(t,i) in type">
-                    </inputtype> -->
-                
-                    <input type="radio" class="btn-check" name="ioradio" id="ioradio-s"
-                    value="到貨" v-model="input.io">
-                    <label class="btn btn-outline-primary" for="ioradio-s">到貨</label>
-                    
-                    <input type="radio" class="btn-check" name="ioradio" id="ioradio-i" checked 
-                    value="調入" v-model="input.io">
-                    <label class="btn btn-outline-primary" for="ioradio-i">調入</label>
-     
-                    <input type="radio" class="btn-check" name="ioradio" id="ioradio-o"  
-                    value="調出" v-model="input.io">
-                    <label class="btn btn-outline-primary" for="ioradio-o">調出</label>
-                    
-                    <input type="radio" class="btn-check" name="ioradio" id="ioradio-l"  
-                    value="剩餘" v-model="input.io">
-                    <label class="btn btn-outline-primary" for="ioradio-l">剩餘</label>
+                    <template v-for="(i,k) in type">
+                        <input type="radio" class="btn-check" name="ioradio" :id="'ioradio-'+(i)"
+                        :value="i" v-model="input.io">
+                        <label class="btn btn-outline-primary" :for="'ioradio-'+(i)">{{i}}</label>
+                    </template>
                 </div>
                 <br>
                 <div>
@@ -55,10 +54,9 @@
                     <div v-for="(item,index) in product" class="mb-2">
                         <input type="checkbox" name="select_menu" :value="index"
                         :id="'selec_menu_'+index" v-model="select_menu">{{index}}
-                        <!-- :id="'selec_menu_'+index" @click.once="add_selected(index,item)" v-model="select_menu">{{index}} -->
-                            <input type="number" :name="'num'+index" :id="'num'+index" v-model="selected_data[index].quanity"
-                            v-if="select_menu.includes(index) && selected_data[index].quanity " > 
-                            <!-- {{selected_data[index].quanity}} -->
+
+                        <input type="number" :name="'num'+index" :id="'num'+index" v-model="selected_data[index].quanity"
+                        v-if="select_menu.includes(index) && selected_data[index].quanity " > 
                     </div>
                 </div>
                 <br>
@@ -84,10 +82,26 @@
                     <br>
                 </div>
                 <button @click="cat_total()">計算總額</button>
-                總計:{{total}} <br>
+                <div v-if="spot">{{spot}}</div>
                 <div v-for="(i,k) in price">
                     {{k}}:{{i}} <br>
                 </div>
+                總計:{{total}} <br>
+                <div v-if="id_5">帳號末5碼:{{}}</div>
+                </div>
+            </div>
+            <div v-if="page=='固定資料'">
+                <div class="form-floating" class="mb-2">
+                    <input type="text" class="form-control" id="spot" placeholder="站點"  v-model="spot">
+                    <label for="spot">請輸入站點</label>
+                </div>
+                <div class="form-floating" class="mb-2">
+                    <input type="number" class="form-control" id="id_5" placeholder="帳號末5碼"  v-model="id_5">
+                    <label for="id_5">帳號末5碼</label>
+                </div>
+                <button @click="save_person">記錄</button>
+
+
             </div>
         </div>
     </div>

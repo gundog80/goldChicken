@@ -3,7 +3,10 @@ const App=Vue.createApp({
         return{
             page:"輸入頁面",
             select_menu:[],
+            page_list:['輸入頁面','統計頁面','固定資料'],
             type:['到貨','調入','調出','剩餘'],
+            spot:"",
+            id_5:"",
             renew:"",
             product:{
                 雞肉:  {name:"雞肉",price:90 },
@@ -17,6 +20,10 @@ const App=Vue.createApp({
                 烤肉:{name:"烤肉",price:100},
                 舒肥雞:{name:"舒肥雞",price:100},
                 赤燒肉:{name:"赤燒肉",price:100},
+                獅子頭:{name:"獅子頭",price:110},
+                其它_90:{name:"其它_90",price:90},
+                其它_100:{name:"其它_100",price:100},
+                其它_110:{name:"其它_110",price:110},
             },
             // selected_data:{},
             input:{
@@ -80,6 +87,7 @@ const App=Vue.createApp({
 				this.set_selected_quanity(1);
         },
         ttonclick(){
+            this.total=0;
             let nowTime=new Date();
             this.saveData=this.getSaveData();
             console.log(this.saveData);
@@ -97,6 +105,8 @@ const App=Vue.createApp({
             localStorage.convenientSchedule=JSON.stringify(this.saveData);
         },
         cat_total(){
+            this.load_person();
+            // this.load_person();
             this.total=0;
             // this.price=[];
 				this.price={};
@@ -142,6 +152,15 @@ const App=Vue.createApp({
             console.log(this.total);
             this.renew="";
         },
+        save_person(){
+            let temp=[this.spot,this.id_5];
+            localStorage.gc_person=JSON.stringify(temp);
+        },
+        load_person(){
+            let temp=JSON.parse(localStorage.gc_person);
+            this.spot=temp[0];
+            this.id_5=temp[1];
+        }
     },
     beforeMount(){
 		this.selected_data=JSON.parse(JSON.stringify(this.product));
