@@ -173,8 +173,37 @@ const App=Vue.createApp({
             let temp=this.saveData[index];
             let copytext=this.spot + " " + temp.SbTq + "  ($" + temp.subtotal + ")";
             console.log(copytext);
-            navigator.clipboard.writeText(copytext);
-            alert('複製文字: '+ copytext);
+            let copArea=document.getElementById('copArea');
+            copArea.innerText=copytext;
+            
+            //選取 限定input
+            // copArea.setAttribute('value',copytext);
+            // copArea.focus();
+            // copArea.select();
+
+            // 選取 通用
+            // let range, selection;
+            // if (document.body.createTextRange) {    //僅ie
+            //     range = document.body.createTextRange();
+            //     range.moveToElementText(copArea);
+            //     console.log('range');
+            //     console.log(range);
+            //     range.select();
+            // } else if (window.getSelection) {   //可能只有windows 待測試
+            //   selection = window.getSelection();
+            //   range = document.createRange();
+            //   range.selectNodeContents(copArea);
+            //   selection.removeAllRanges();
+            //   selection.addRange(range);
+            // };
+            // Document.execCommand('copy');
+
+            if(navigator.clipboard && window.isSecureContext){
+                navigator.clipboard.writeText(copytext)
+                .then(function(){alert('複製文字: '+ copytext)},
+                    function(){alert('複製失敗 拜託回報')})
+            }
+            // alert('複製文字: '+ copytext);
         }
     },
     beforeMount(){
