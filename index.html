@@ -10,14 +10,14 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
 
-    <title>便當調度紀錄-bata_1.5</title>
+    <title>便當調度紀錄-bata_1.6</title>
 </head>
 <body>
     <h1>便當調度紀錄</h1>
     <div id="App">
 
 
-        <div class="btn-group mb-2" role="group" aria-label="Basic radio toggle button group">
+        <div class="btn-group mb-g2" role="group" aria-label="Basic radio toggle button group">
             
             <!-- template-失敗 v-model出問題
             <template v-for="(i,k) in page_list">
@@ -40,7 +40,6 @@
         </div>
         <div class="border border-primary">
             <div v-if="page=='輸入頁面'">
-
                 <div class="btn-group mb-2" role="group" aria-label="Basic radio toggle button group">
                     <template v-for="(i,k) in type">
                         <input type="radio" class="btn-check" name="ioradio" :id="'ioradio-'+(i)"
@@ -50,7 +49,11 @@
                 </div>
                 <br>
                 <div>
-                    <h3>品項</h3>
+
+                    <div class="d-flex">
+                        <h3 class="mx-3">品項</h3>
+                        <button @click="save">記錄</button>
+                    </div>
                     <div v-for="(item,index) in product" class="mb-2">
                         <input type="checkbox" name="select_menu" :value="index"
                         :id="'selec_menu_'+index" v-model="select_menu">{{index}}
@@ -67,27 +70,41 @@
                 <div v-for="(data,index) in saveData" mb-4>
                     <h3>{{data.type}}</h3>
                     {{data.time}}
-                    <div v-for="(item,key) in data">
+                    <div >
                         <ul>
-                            <li v-if="!['time','type','subtotal'].includes(key)">
-                                <span>
-                                    {{key}} : ${{item.price}} *{{item.quanity}}  = {{item.price*item.quanity}}</li>
+                            <template v-for="(item,key) in data">
+                                <li class="my-1"  v-if="!['time','type','subtotal','SbTq'].includes(key)">
+    
+                                    <span>
+                                        {{key}} : ${{item.price}} *{{item.quanity}}  = {{item.price*item.quanity}}</li>
+                            </template>
                                 </span>
                         </ul>
                     </div>
-                    <div>
-                        <span>小計: </span><span v-if="['調出','剩餘'].includes(data.type)">{{data.type}}-</span>{{data.subtotal}}  </span>
-                        <button @click="delSave(index)">刪除</button>
+                    <div class="d-flex justify-content-between"> 
+                        <span class="m-0">
+                            <span>小計: </span><span v-if="['調出','剩餘'].includes(data.type)">-</span> {{data.subtotal}}  </span>
+                        </span>
+                        <span class="m-0 p-0">
+                            <button class="mx-3" v-if="data.type=='調入'" @click="getCopy(index)">回報複製</button>
+                            <button class="mx-3" @click="delSave(index)">刪除</button>
+                        </span>
                     </div>
                     <br>
                 </div>
                 <button @click="cat_total()">計算總額</button>
-                <div v-if="spot">{{spot}}</div>
-                <div v-for="(i,k) in price">
-                    {{k}}:{{i}} <br>
-                </div>
-                總計:{{total}} <br>
-                <div v-if="id_5">帳號末5碼:{{}}</div>
+                <div class="ps-3" v-if="showTotal==1">
+                    <div class="h5 mb-0 mt-2" v-if="today">
+                        {{today}} <span v-if="spot" class="text-primary h4"> {{spot}}</span>
+                    </div>
+                    <div class="h5 mb-1 text-danger">
+                        &ensp;&ensp;&ensp;總計:{{total}}
+                    </div>
+                    <div v-if="id_5" class="mb-2">帳號末5碼:{{id_5}}</div>
+                    <div v-for="(i,k) in price">
+                        {{k}}:{{i}}
+                    </div>
+
                 </div>
             </div>
             <div v-if="page=='固定資料'">

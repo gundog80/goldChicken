@@ -9,6 +9,9 @@ const App=Vue.createApp({
             id_5:"",
             renew:"",
             product:{
+                其它_90:{name:"其它_90",price:90},
+                其它_100:{name:"其它_100",price:100},
+                其它_110:{name:"其它_110",price:110},
                 雞肉:  {name:"雞肉",price:90 },
                 雞腿:  {name:"雞腿",price:100 },
                 排骨:  {name:"排骨",price:100 },
@@ -21,9 +24,7 @@ const App=Vue.createApp({
                 舒肥雞:{name:"舒肥雞",price:100},
                 赤燒肉:{name:"赤燒肉",price:100},
                 獅子頭:{name:"獅子頭",price:110},
-                其它_90:{name:"其它_90",price:90},
-                其它_100:{name:"其它_100",price:100},
-                其它_110:{name:"其它_110",price:110},
+
             },
             // selected_data:{},
             input:{
@@ -52,6 +53,7 @@ const App=Vue.createApp({
             let delArr=[]
             saveArr.forEach((od,i)=>{
                 if(Date.parse(od.time)<Date.parse(delTime)){
+                // if(Date(od.time)<Date(delTime)){
                 // if(Date.parse(od.time)<Date.parse('2022-06-09T15:33:22.223Z')){
                     delArr.push(i);
                 }
@@ -69,15 +71,18 @@ const App=Vue.createApp({
         save(){
             let newData={};
             let subtotal=0;
+            let SbTq=0;
             newData.type=this.input.io;
             this.select_menu.forEach(pd=>{
                 newData[pd]=this.selected_data[pd];
                 subtotal+= newData[pd].price * newData[pd].quanity;
+                SbTq+= Number(newData[pd].quanity);
             });
             newData.subtotal=subtotal;
+            newData.SbTq=SbTq;
             let nowTime=new Date();
             
-            newData.time=nowTime;
+            newData.time=nowTime.toString();
             // App.$set(this,'saveData',this.getSaveData());
             this.saveData=this.getSaveData();
             this.saveData.push(newData);
@@ -87,8 +92,11 @@ const App=Vue.createApp({
 				this.set_selected_quanity(1);
         },
         ttonclick(){
-            this.total=0;
             let nowTime=new Date();
+            this.today= nowTime.getMonth()+1 +"/" + nowTime.getDate();
+            this.load_person();
+            this.showTotal="n";
+            this.total=0;
             this.saveData=this.getSaveData();
             console.log(this.saveData);
             this.saveData=this.chkSaveData(this.saveData,nowTime)
@@ -104,11 +112,14 @@ const App=Vue.createApp({
             this.renew="";
             localStorage.convenientSchedule=JSON.stringify(this.saveData);
         },
+        load_person(){
+            let temp=JSON.parse(localStorage.gc_person);
+            this.spot=temp[0];
+            this.id_5=temp[1];
+        },
         cat_total(){
-            this.load_person();
-            // this.load_person();
+            this.renew="更新中";
             this.total=0;
-            // this.price=[];
 				this.price={};
             this.saveData.forEach(i=>{
                 switch (i.type){
@@ -119,7 +130,7 @@ const App=Vue.createApp({
                         Object.entries(i).forEach(j=>{
                             if(['time','type','subtotal'].includes(j[0])){}
                             else{
-                                let k='$'+j[1].price;
+                                let k= '$' + j[1].price;
                                 if(typeof this.price[k] === 'undefined'){
                                     this.price[k]=parseInt(j[1].quanity);
                                 }else{
@@ -132,7 +143,7 @@ const App=Vue.createApp({
                     case "剩餘":
                         this.total-=i.subtotal;
                         Object.entries(i).forEach(j=>{
-                            if(['time','type','subtotal'].includes(j[0])){}
+                            if(['time','type','subtotal','SbTq'].includes(j[0])){}
                             else{
                                 let k='$'+j[1].price;
                                 if(typeof this.price[k] === 'undefined'){
@@ -145,21 +156,24 @@ const App=Vue.createApp({
                     break;
                     default :
                     break;
-                }
-					 console.log(this.price)
+                };
+					//  console.log(this.price);
             });
-            this.renew="更新中";
-            console.log(this.total);
+            // console.log(this.total);
             this.renew="";
+            this.showTotal=1;
         },
         save_person(){
             let temp=[this.spot,this.id_5];
             localStorage.gc_person=JSON.stringify(temp);
         },
-        load_person(){
-            let temp=JSON.parse(localStorage.gc_person);
-            this.spot=temp[0];
-            this.id_5=temp[1];
+
+        getCopy(index){
+            let temp=this.saveData[index];
+            let copytext=this.spot + " " + temp.SbTq + "  ($" + temp.subtotal + ")";
+            console.log(copytext);
+            navigator.clipboard.writeText(copytext);
+            alert('複製文字: '+ copytext);
         }
     },
     beforeMount(){
@@ -167,13 +181,5 @@ const App=Vue.createApp({
 		this.set_selected_quanity(1);
     }
 })
-// App.component('inputtype',{
-// 	props:['type'],
-// 	data(){
-// 		return{}
-// 	},
-// 	template:`<input type='radio' class="btn-check" name="ioradio" id="ioradio-s"
-// 	value="到貨" v-model="input.io">
-// 	<label class="btn btn-outline-primary" for="ioradio-i">調入</label>`,
-// });
+
 App.mount('#App')
