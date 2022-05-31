@@ -1,3 +1,4 @@
+// 便當調度紀錄 2.0
 const App=Vue.createApp({
     data(){
         return{
@@ -128,7 +129,7 @@ const App=Vue.createApp({
                     case "到貨":
                         this.total+=i.subtotal;
                         Object.entries(i).forEach(j=>{
-                            if(['time','type','subtotal'].includes(j[0])){}
+                            if(['time','type','subtotal','SbTq'].includes(j[0])){}
                             else{
                                 let k= '$' + j[1].price;
                                 if(typeof this.price[k] === 'undefined'){
