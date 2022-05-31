@@ -173,8 +173,8 @@ const App=Vue.createApp({
             let temp=this.saveData[index];
             let copytext=this.spot + " " + temp.SbTq + "  ($" + temp.subtotal + ")";
             console.log(copytext);
-            let copArea=document.getElementById('copArea');
-            copArea.innerText=copytext;
+            // let copArea=document.getElementById('copArea');
+            // copArea.innerText=copytext;
             
             //選取 限定input
             // copArea.setAttribute('value',copytext);
