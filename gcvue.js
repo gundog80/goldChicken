@@ -114,9 +114,15 @@ const App=Vue.createApp({
             localStorage.convenientSchedule=JSON.stringify(this.saveData);
         },
         load_person(){
-            let temp=JSON.parse(localStorage.gc_person);
-            this.spot=temp[0];
-            this.id_5=temp[1];
+            if(localStorage.gc_person){
+                let temp=JSON.parse(localStorage.gc_person);
+                this.spot=temp[0];
+                this.id_5=temp[1];
+            }else{
+                temp=["",""];
+                this.spot=temp[0];
+                this.id_5=temp[1];
+            }
         },
         cat_total(){
             this.renew="更新中";

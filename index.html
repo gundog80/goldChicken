@@ -52,18 +52,22 @@
 
                     <div class="d-flex">
                         <h3 class="mx-3">品項</h3>
-                        <button @click="save">記錄</button>
+                        <button type="button" class="btn btn-outline-primary" @click="save">記錄</button>
+                        
                     </div>
-                    <div v-for="(item,index) in product" class="mb-2">
+                    <div v-for="(item,index) in product" class="mb-2 mx-3">
                         <input type="checkbox" name="select_menu" :value="index"
-                        :id="'selec_menu_'+index" v-model="select_menu">{{index}}
+                        :id="'selec_menu_'+index" v-model="select_menu">
+                        <label class="form-check-label" :for="'selec_menu_'+index">
+                            {{index}}
+                          </label>
 
                         <input type="number" :name="'num'+index" :id="'num'+index" v-model="selected_data[index].quanity"
                         v-if="select_menu.includes(index) && selected_data[index].quanity " > 
                     </div>
                 </div>
                 <br>
-                <button @click="save">記錄</button>
+                <button type="button" class="btn btn-outline-primary" @click="save">記錄</button>
             </div>
             <div v-if="page=='統計頁面'">
                 <div>本日紀綠 {{renew}}</div>
