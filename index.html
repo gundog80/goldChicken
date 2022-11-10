@@ -12,12 +12,12 @@
 
     <title>便當調度紀錄-bata_2.0</title>
 </head>
-<body>
+<body style="min-width:300px;max-width:500px;">
     <h1>便當調度紀錄</h1>
     <div id="App">
 
 
-        <div class="btn-group mb-g2" role="group" aria-label="Basic radio toggle button group">
+        <div class="btn-group mb-2" role="group" aria-label="Basic radio toggle button group">
             
             <!-- template-失敗 v-model出問題
             <template v-for="(i,k) in page_list">
@@ -38,7 +38,7 @@
             value="固定資料" v-model="page" @click="load_person">
             <label class="btn btn-outline-primary" for="pageradio3">固定資料</label>
         </div>
-        <div class="border border-primary">
+        <div class="border border-primary " style="width:100vw">
             <div v-if="page=='輸入頁面'">
                 <div class="btn-group mb-2" role="group" aria-label="Basic radio toggle button group">
                     <template v-for="(i,k) in type">
@@ -46,24 +46,41 @@
                         :value="i" v-model="input.io">
                         <label class="btn btn-outline-primary" :for="'ioradio-'+(i)">{{i}}</label>
                     </template>
+                    <input type="radio" class="mx-1,btn-check" name="ioradio" id="'ioradio-s'"
+                        value="其它" v-model="input.io">
+                        <label class="btn btn-outline-success" for="'ioradio-s'">其它(售出)</label>
                 </div>
                 <br>
-                <div>
-
-                    <div class="d-flex">
-                        <h3 class="mx-3">品項</h3>
-                        <button @click="save">記錄</button>
+                <div class="d-flex justify-content-center flex-wrap">
+                    
+                    <div class="col-12 d-flex justify-content-around align-items-center">
+                        <!-- <div class="col-3"> -->
+                        <div class="col-3">
+                            <h3>品項</h3>
+                            <button @click="save">記錄</button>
+                        </div>
+                        <div class="btn-group mb-2 col-8" role="group" aria-label="Basic radio toggle button group">
+                            <template v-for="i in 5">
+                                <input type="radio" class="btn-check" name="preset_quantity" :id="'preset_quantity-'+(i)"
+                                :value="i" v-model="preset_quantity">
+                                <label class="btn btn-outline-primary" :for="'preset_quantity-'+(i)"> x{{i}} </label>
+                            </template>
+                        </div>
                     </div>
-                    <div v-for="(item,index) in product" class="mb-2">
-                        <input type="checkbox" name="select_menu" :value="index"
-                        :id="'selec_menu_'+index" v-model="select_menu">{{index}}
-
-                        <input type="number" :name="'num'+index" :id="'num'+index" v-model="selected_data[index].quanity"
-                        v-if="select_menu.includes(index) && selected_data[index].quanity " > 
+                    <div class="col-12 d-flex flex-wrap" style="margin:auto">
+                        <div v-for="(item,index) in product" class="col-6 py-2 border-start border-end border-info">
+                            <input class="mx-3" type="checkbox" name="select_menu" :value="index"
+                            :id="'select_menu_'+index" v-model="select_menu" @click="set_item_quanity(index)" >{{index}}
+                            <br>
+                            <!-- <input class="col-8 mx-3"  :name="'num'+index" :id="'num'+index" :value="index" -->
+                            <input class="col-8 mx-3"  :name="'num'+index" :id="'num'+index" v-model="selected_data[index].quanity"
+                            v-if="select_menu.includes(index) && selected_data[index].quanity " > 
+                        </div>
                     </div>
+                    <button @click="save">記錄</button>
                 </div>
                 <br>
-                <button @click="save">記錄</button>
+                
             </div>
             <div v-if="page=='統計頁面'">
                 <div>本日紀綠 {{renew}}</div>
@@ -94,6 +111,7 @@
                 </div>
                 <!-- <input id="copArea"> -->
                 <button @click="cat_total()">計算總額</button>
+                <button @click="cat_other()">其它加總</button>
                 <div class="ps-3" v-if="showTotal==1">
                     <div class="h5 mb-0 mt-2" v-if="today">
                         {{today}} <span v-if="spot" class="text-primary h4"> {{spot}}</span>
@@ -102,10 +120,25 @@
                         &ensp;&ensp;&ensp;總計:{{total}}
                     </div>
                     <div v-if="id_5" class="mb-2">帳號末5碼:{{id_5}}</div>
-                    <div v-for="(i,k) in price">
+                    <div v-for="(i,k) in total_price">
+                        {{k}}:{{i}}
+                    </div>
+                    <div v-for="(i,k) in total_project">
                         {{k}}:{{i}}
                     </div>
 
+                </div>
+                <div class="ps-3" v-if="otherTotal==1">
+                    <div class="h5 mb-0 mt-2" v-if="today">
+                        {{today}} <span v-if="spot" class="text-primary h4"> {{spot}}</span>
+                    </div>
+                    <div class="h5 mb-1 text-danger">
+                        &ensp;&ensp;&ensp;總計:{{total}}
+                    </div>
+                    <div v-if="id_5" class="mb-2">帳號末5碼:{{id_5}}</div>
+                    <div v-for="(i,k) in total_other">
+                        {{k}}:{{i}}
+                    </div>
                 </div>
             </div>
             <div v-if="page=='固定資料'">
