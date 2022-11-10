@@ -6,6 +6,7 @@ const App=Vue.createApp({
             select_menu:[],
             page_list:['輸入頁面','統計頁面','固定資料'],
             type:['到貨','調入','調出','剩餘'],
+            
             spot:"",
             id_5:"",
             renew:"",
@@ -15,6 +16,7 @@ const App=Vue.createApp({
                 其它_110:{name:"其它_110",price:110},
                 雞肉:  {name:"雞肉",price:90 },
                 雞腿:  {name:"雞腿",price:100 },
+                三杯雞:  {name:"三杯雞",price:100 },
                 排骨:  {name:"排骨",price:100 },
                 瓜仔肉:{name:"瓜仔肉",price:90},
                 左宗棠雞丁:{name:"左宗棠雞丁",price:100},
@@ -24,13 +26,14 @@ const App=Vue.createApp({
                 烤肉:{name:"烤肉",price:100},
                 舒肥雞:{name:"舒肥雞",price:100},
                 赤燒肉:{name:"赤燒肉",price:100},
-                獅子頭:{name:"獅子頭",price:110},
+                // 獅子頭:{name:"獅子頭",price:110},
 
             },
             // selected_data:{},
             input:{
-                io:"調入",
-            }
+                io:"到貨",
+            },
+            preset_quantity:3,
         };
     },
     methods:{
@@ -38,7 +41,10 @@ const App=Vue.createApp({
 				for(let key in this.selected_data){
 					this.selected_data[key].quanity=i;
 				};
-
+        },
+        set_item_quanity(index){
+            console.log(index);
+				this.selected_data[index].quanity=this.preset_quantity;
         },
         getSaveData(){
             // let saveData=[];
@@ -90,7 +96,7 @@ const App=Vue.createApp({
             this.saveData=this.chkSaveData(this.saveData,nowTime);
             localStorage.convenientSchedule=JSON.stringify(this.saveData);
             this.select_menu=[];
-				this.set_selected_quanity(1);
+				// this.cy(0);
         },
         ttonclick(){
             let nowTime=new Date();
@@ -127,39 +133,57 @@ const App=Vue.createApp({
         cat_total(){
             this.renew="更新中";
             this.total=0;
-				this.price={};
+            this.total_price={};
+            this.total_project={};
+            // console.log(this.saveData);
             this.saveData.forEach(i=>{
+                
                 switch (i.type){
                     // case "調入"||"到貨":
                     case "調入":
                     case "到貨":
+                        
                         this.total+=i.subtotal;
                         Object.entries(i).forEach(j=>{
                             if(['time','type','subtotal','SbTq'].includes(j[0])){}
                             else{
                                 let k= '$' + j[1].price;
-                                if(typeof this.price[k] === 'undefined'){
-                                    this.price[k]=parseInt(j[1].quanity);
+                                if(typeof this.total_price[k] === 'undefined'){
+                                    this.total_price[k]=parseInt(j[1].quanity);
                                 }else{
-                                    this.price[k]+=parseInt(j[1].quanity);
+                                    this.total_price[k]+=parseInt(j[1].quanity);
+                                };
+                                let k2=j[1].name;
+                                if(typeof this.total_project[k2] === 'undefined'){
+                                    this.total_project[k2]=parseInt(j[1].quanity);
+                                }else{
+                                    this.total_project[k2]+=parseInt(j[1].quanity);
                                 }
                             }
                         });
                         break;
                     case "調出":
                     case "剩餘":
+                        console.log("hi total");
                         this.total-=i.subtotal;
                         Object.entries(i).forEach(j=>{
                             if(['time','type','subtotal','SbTq'].includes(j[0])){}
                             else{
                                 let k='$'+j[1].price;
-                                if(typeof this.price[k] === 'undefined'){
-                                    this.price[k]=-j[1].quanity;
+                                if(typeof this.total_price[k] === 'undefined'){
+                                    this.total_price[k]=-j[1].quanity;
                                 }else{
-                                    this.price[k]-=j[1].quanity;
+                                    this.total_price[k]-=j[1].quanity;
+                                };
+                                let k2=j[1].name;
+                                if(typeof this.total_project[k2] === 'undefined'){
+                                    this.total_project[k2]=-j[1].quanity;
+                                }else{
+                                    this.total_project[k2]+=-j[1].quanity;
                                 }
                             }
                         });
+                        // set_selected_quanit
                     break;
                     default :
                     break;
@@ -168,7 +192,42 @@ const App=Vue.createApp({
             });
             // console.log(this.total);
             this.renew="";
+            this.otherTotal=false;
             this.showTotal=1;
+        },
+        cat_other(){
+            this.renew="更新中";
+            this.total=0;
+            this.total+=i.subtotal;
+            console.log(this.total);
+				this.total_other={};
+                // console.log(this.saveData);
+            this.saveData.forEach(i=>{
+                switch (i.type){
+                    // case "調入"||"到貨":
+                    case "其它":
+                        Object.entries(i).forEach(j=>{
+                            if(['time','type','subtotal','SbTq'].includes(j[0])){}
+                            else{
+                                let k3=j[1].name;
+                                if(typeof this.total_other[k3] === 'undefined'){
+                                    this.total_other[k3]=parseInt(j[1].quanity);
+                                }else{
+                                    this.total_other[k3]+=parseInt(j[1].quanity);
+                                }
+                            }
+                        });
+                        break;
+   
+                    default :
+                    break;
+                };
+					//  console.log(this.price);
+            });
+            // console.log(this.total);
+            this.renew="";
+            this.showTotal=false;
+            this.otherTotal=1;
         },
         save_person(){
             let temp=[this.spot,this.id_5];
@@ -214,7 +273,7 @@ const App=Vue.createApp({
     },
     beforeMount(){
 		this.selected_data=JSON.parse(JSON.stringify(this.product));
-		this.set_selected_quanity(1);
+		this.set_selected_quanity(0);
     }
 })
 
