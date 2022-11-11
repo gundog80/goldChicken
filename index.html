@@ -82,9 +82,10 @@
                             :id="'select_menu_'+index" v-model="select_menu" @click="set_item_quanity(index)" >{{index}}
                             <br>
                             <!-- <input class="col-8 mx-3"  :name="'num'+index" :id="'num'+index" :value="index" -->
-                            <div class="d-flex justify-content-center " v-if="select_menu.includes(index) && selected_data[index].quanity ">
+                            <div class="d-flex justify-content-center " v-if="select_menu.includes(index) && ( selected_data[index].quanity || this.input.io=='其它' ) ">
+                            <!-- <div class="d-flex justify-content-center " v-if="select_menu.includes(index) "> -->
                                 <div class="reduce col-2 border border-primary text-center" @click="reduceN(index)"> - </div>
-                                <input class="col-6 "  :name="'num'+index" :id="'num'+index" v-model="selected_data[index].quanity"
+                                <input class="col-6 " type="number" :name="'num'+index" :id="'num'+index" v-model="selected_data[index].quanity"
                                  > 
                                 <div class="add col-2 border border-primary text-center " @click="addN(index)"> + </div>
                             </div>
