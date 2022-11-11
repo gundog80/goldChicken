@@ -10,7 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
 
-    <title>便當調度紀錄-bata_2.0</title>
+    <title>便當調度紀錄-bata_3.0</title>
 </head>
 
 
@@ -44,15 +44,20 @@
         </div>
         <div class="border border-primary " style="width:100vw">
             <div v-if="page=='輸入頁面'">
-                <div class="btn-group mb-2" role="group" aria-label="Basic radio toggle button group">
+                <div class="btn-group mb-2 col-12" role="group" aria-label="Basic radio toggle button group">
                     <template v-for="(i,k) in type">
-                        <input type="radio" class="btn-check" name="ioradio" :id="'ioradio-'+(i)"
+                        <input type="radio" class="btn-check " name="ioradio" :id="'ioradio-'+(i)"
                         :value="i" v-model="input.io">
-                        <label class="btn btn-outline-primary" :for="'ioradio-'+(i)">{{i}}</label>
+                        <label class="btn btn-outline-primary " :for="'ioradio-'+(i)">{{i}}</label>
                     </template>
-                    <input type="radio" class="mx-1,btn-check" name="ioradio" id="'ioradio-s'"
+                    <!-- <template>
+                        <div class="reduce"></div> -->
+                        <input type="radio" class="mx-1 btn-check " name="ioradio" id="'ioradio-s'"
                         value="其它" v-model="input.io">
-                        <label class="btn btn-outline-success" for="'ioradio-s'">其它(售出)</label>
+                        <label class="btn btn-outline-success ms-2" for="'ioradio-s'">其它(售出)</label>
+                        <!-- <div class="add"></div>
+
+                    </template>     -->
                 </div>
                 <br>
                 <div class="d-flex justify-content-center flex-wrap">
@@ -77,8 +82,12 @@
                             :id="'select_menu_'+index" v-model="select_menu" @click="set_item_quanity(index)" >{{index}}
                             <br>
                             <!-- <input class="col-8 mx-3"  :name="'num'+index" :id="'num'+index" :value="index" -->
-                            <input class="col-8 mx-3"  :name="'num'+index" :id="'num'+index" v-model="selected_data[index].quanity"
-                            v-if="select_menu.includes(index) && selected_data[index].quanity " > 
+                            <div class="d-flex justify-content-center " v-if="select_menu.includes(index) && selected_data[index].quanity ">
+                                <div class="reduce col-2 border border-primary text-center" @click="reduceN(index)"> - </div>
+                                <input class="col-6 "  :name="'num'+index" :id="'num'+index" v-model="selected_data[index].quanity"
+                                 > 
+                                <div class="add col-2 border border-primary text-center " @click="addN(index)"> + </div>
+                            </div>
                         </div>
                     </div>
                     <button @click="save">記錄</button>

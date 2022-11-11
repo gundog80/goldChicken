@@ -6,14 +6,12 @@ const App=Vue.createApp({
             select_menu:[],
             page_list:['輸入頁面','統計頁面','固定資料'],
             type:['到貨','調入','調出','剩餘'],
-            
+            selected_data:[],
             spot:"",
             id_5:"",
             renew:"",
             product:{
-                其它_90:{name:"其它_90",price:90},
-                其它_100:{name:"其它_100",price:100},
-                其它_110:{name:"其它_110",price:110},
+                折扣10元:  {name:"折扣10元",price:-10 },
                 雞肉:  {name:"雞肉",price:90 },
                 雞腿:  {name:"雞腿",price:100 },
                 三杯雞:  {name:"三杯雞",price:100 },
@@ -26,6 +24,9 @@ const App=Vue.createApp({
                 烤肉:{name:"烤肉",price:100},
                 舒肥雞:{name:"舒肥雞",price:100},
                 赤燒肉:{name:"赤燒肉",price:100},
+                其它_90:{name:"其它_90",price:90},
+                其它_100:{name:"其它_100",price:100},
+                其它_110:{name:"其它_110",price:110},
                 // 獅子頭:{name:"獅子頭",price:110},
 
             },
@@ -37,6 +38,12 @@ const App=Vue.createApp({
         };
     },
     methods:{
+        reduceN(index){
+            this.selected_data[index].quanity -= 1;
+        },
+        addN(index){
+            this.selected_data[index].quanity += 1;
+        },
         set_selected_quanity(i){
 				for(let key in this.selected_data){
 					this.selected_data[key].quanity=i;
@@ -198,11 +205,9 @@ const App=Vue.createApp({
         cat_other(){
             this.renew="更新中";
             this.total=0;
-            this.total+=i.subtotal;
-            console.log(this.total);
-				this.total_other={};
-                // console.log(this.saveData);
+            this.total_other={};
             this.saveData.forEach(i=>{
+                this.total+=parseInt(i.subtotal);
                 switch (i.type){
                     // case "調入"||"到貨":
                     case "其它":
@@ -270,6 +275,11 @@ const App=Vue.createApp({
             }
             // alert('複製文字: '+ copytext);
         }
+    },
+    watch:{
+        "selected_data['雞腿']":function(){
+            console.log(11);
+        },
     },
     beforeMount(){
 		this.selected_data=JSON.parse(JSON.stringify(this.product));
