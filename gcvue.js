@@ -207,10 +207,10 @@ const App=Vue.createApp({
             this.total=0;
             this.total_other={};
             this.saveData.forEach(i=>{
-                this.total+=parseInt(i.subtotal);
                 switch (i.type){
                     // case "調入"||"到貨":
                     case "其它":
+                        this.total+=parseInt(i.subtotal);
                         Object.entries(i).forEach(j=>{
                             if(['time','type','subtotal','SbTq'].includes(j[0])){}
                             else{
